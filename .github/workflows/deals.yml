@@ -1,6 +1,38 @@
-git init
-git add .
-git commit -m "Premier commit"
-git branch -M main
-git remote add origin https://github.com/TON-PSEUDO/sneaker-deal-bot.git
-git push -u origin main
+name: Sneaker Deal Checker
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-deals:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Lancer le script
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python sneaker_deals.py
+
+      - name: Sauvegarder l'historique et les exports
+        run: |
+          git config user.name "sneaker-deal-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add deals_vus.json exports/ 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Mise à jour historique des deals"
+          git push
