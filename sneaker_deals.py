@@ -382,7 +382,12 @@ def main():
 
     if not bonnes_affaires:
         print(f"Aucune chaussure (nouvelle) ne respecte tes critères (>{PRIX_ORIGINAL_MIN}€ neuf, promo ≥{PRIX_PROMO_MIN}€) sur ce passage.")
-        print("C'est normal de temps en temps — pas de notification Telegram envoyée, on retente dans 2h.")
+        print("C'est normal de temps en temps — on retente dans 2h.")
+        envoyer_telegram(
+            f"👟 Aucune offre chaussures ne correspond à tes critères pour le moment "
+            f"(>{PRIX_ORIGINAL_MIN}€ neuf, promo ≥{PRIX_PROMO_MIN}€).\n"
+            f"Prochain scan dans ~2h. ✅ Le bot est bien connecté."
+        )
         # On met quand même à jour l'historique pour ne pas re-scanner les mêmes deals hors-critères sans fin
         liens_deja_vus.update(d.lien for d in deals_uniques if d.lien)
         sauvegarder_historique(liens_deja_vus)
