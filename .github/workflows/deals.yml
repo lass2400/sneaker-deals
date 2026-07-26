@@ -2,14 +2,22 @@ name: Sneaker Deal Checker
 
 on:
   schedule:
+    # Toutes les 2 heures. GitHub Actions utilise l'heure UTC (Paris = UTC+1 ou +2 selon la saison).
     - cron: "0 */2 * * *"
   workflow_dispatch:
+    # Permet de lancer le script manuellement depuis l'onglet "Actions" sur GitHub, pour tester.
+  push:
+    paths:
+      - "sneaker_deals.py"
+      - ".github/workflows/deals.yml"
+    # Relance automatiquement le workflow dès que tu modifies le script ou ce fichier,
+    # pratique pendant que tu testes/ajustes les critères.
 
 jobs:
   check-deals:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write   # nécessaire pour que le job puisse committer l'historique mis à jour
 
     steps:
       - name: Récupérer le dépôt
